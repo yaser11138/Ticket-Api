@@ -21,11 +21,11 @@ class Discussion(models.Model):
         ("4", "Important"),
         ("5", "Very Important"),
     ]
-    topic = models.CharField(max_length=100, null=False, blank=False),
-    start_time = models.DateTimeField(auto_now_add=True),
-    degree_of_importance = models.CharField(choices=ImportanceRate, null=False),
-    rate = models.CharField(max_length=1, choices=CohicesRate),
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="discussion_opened"),
+    topic = models.CharField(max_length=100, null=False, blank=False)
+    start_time = models.DateTimeField(auto_now_add=True)
+    degree_of_importance = models.CharField(choices=ImportanceRate, null=False)
+    rate = models.CharField(max_length=1, choices=CohicesRate)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="discussion_opened")
 
     @property
     def is_terminated(self):

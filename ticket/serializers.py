@@ -1,29 +1,36 @@
-from abc import ABC
-
 from rest_framework import serializers
 from .models import Ticket, Discussion
+from accounts.serializers import UserSerializer
 
 
 class TicketSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
 
     class Meta:
         model = Ticket
         fields = "__all__"
         extra_kwargs = {
             "discussion": {"read_only": True},
-            "user": {"read_only": True}
         }
 
 
 class DiscussionSerializer(serializers.ModelSerializer):
+
+    tickets = serializers.SerializerMethodField()
 
     class Meta:
         model = Discussion
         fields = "__all__"
         extra_kwargs = {
             "created_by": {"read_only": True},
-            "rate": {"read_only": True}
+            "rate": {"read_only": True},
+            "is_terminated": {"read_only": True}
         }
+
+    def get_tickets(self, obj):
+        tickets = obj.tickets
+        tickets_serializer = TicketSerializer(instance=tickets, many=True)
+        return tickets_serializer.data
 
 
 class CombinedDiscussionTicketSerializer(serializers.Serializer):

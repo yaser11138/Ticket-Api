@@ -26,13 +26,7 @@ class Discussion(models.Model):
     degree_of_importance = models.CharField(choices=ImportanceRate, null=False)
     rate = models.CharField(max_length=1, choices=CohicesRate)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="discussion_opened")
-
-    @property
-    def is_terminated(self):
-        if self.rate:
-            return True
-        else:
-            return False
+    is_terminated = models.BooleanField(default=False)
 
 
 class Ticket(models.Model):

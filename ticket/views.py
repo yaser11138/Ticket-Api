@@ -7,9 +7,10 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from .serializers import CombinedDiscussionTicketSerializer, TicketSerializer, DiscussionSerializer
 from .models import Discussion
+from .pagination import DiscussionPagination
 
 
-class DiscussionTicketViewSet(viewsets.ViewSet):
+class DiscussionTicketViewSet(viewsets.ViewSet, DiscussionPagination):
     serializer_class = CombinedDiscussionTicketSerializer
     permission_classes = [IsAuthenticated]
 
@@ -26,9 +27,10 @@ class DiscussionTicketViewSet(viewsets.ViewSet):
             return Response(data=combined_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def list(self, request):
-        discussions = Discussion.objects.all()
-        serializer = DiscussionSerializer(discussions, many=True)
-        return Response(serializer.data)
+        queryset = Discussion.objects.all()
+        data = self.paginate_queryset(queryset, request)
+        serializer = DiscussionSerializer(instance=data, many=True)
+        return self.get_paginated_response(serializer.data)
 
     def retrieve(self, request, pk=None):
         try:

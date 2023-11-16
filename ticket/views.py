@@ -3,12 +3,14 @@ from rest_framework.views import APIView
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
-from .serializers import CombinedDiscussionTicketSerializer, TicketSerializer
+from .serializers import CombinedDiscussionTicketSerializer, TicketSerializer, DiscussionSerializer
 from .models import Discussion
 
 
 class DiscussionTicketViewSet(viewsets.ViewSet):
+    serializer_class = CombinedDiscussionTicketSerializer
     permission_classes = [IsAuthenticated]
 
     @transaction.atomic()
@@ -36,6 +38,20 @@ class DiscussionTicketViewSet(viewsets.ViewSet):
 
         serializer = DiscussionSerializer(discussion)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['post'], name="rate")
+    def rate(self, request, pk=None):
+        try:
+            discussion = Discussion.objects.get(pk=pk)
+        except Discussion.DoesNotExist:
+            return Response(data={"detail": "Discussion not found"}, status=status.HTTP_404_NOT_FOUND)
+        if request.data.get("rate") is None:
+            return Response(data={"error": "rate haven't sent"})
+        else:
+            discussion.rate = request.data.get("rate")
+            discussion.is_terminated = True
+            discussion.save()
+            return Response(data={"detail": "The discussion was rated"})
 
 
 class CreateTask(APIView):

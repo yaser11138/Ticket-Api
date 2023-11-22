@@ -90,9 +90,10 @@ class CreateTicket(APIView):
         ticket_serializer = TicketSerializer(data=request.data)
         if ticket_serializer.is_valid():
             ticket_serializer.validated_data["discussion"] = discussion
-            ticket_serializer.validated_data["user"] = requset.user
+            ticket_serializer.validated_data["user"] = request.user
             ticket_serializer.save()
             create_notification(user=request.user, action=" پیام در گفتگو ارسال شد", content_object=discussion)
+            discussion.set_is_answered_vlaue(request.user)
             return Response(data={"ticket": ticket_serializer.data}, status=status.HTTP_201_CREATED)
         else:
             return Response(data={"error": ticket_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)

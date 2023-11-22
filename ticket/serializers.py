@@ -24,7 +24,8 @@ class DiscussionSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             "created_by": {"read_only": True},
             "rate": {"read_only": True},
-            "is_terminated": {"read_only": True}
+            "is_terminated": {"read_only": True},
+            "is_answered": {"read_only": True}
         }
 
     def get_tickets(self, obj):
@@ -46,4 +47,4 @@ class CombinedDiscussionTicketSerializer(serializers.Serializer):
 
         ticket_instance = Ticket.objects.create(user=user, discussion=discussion_instance, **ticket_data)
 
-        return {'discussion': discussion_instance, 'ticket': ticket_instance}
+        return {'discussion': discussion_instance}

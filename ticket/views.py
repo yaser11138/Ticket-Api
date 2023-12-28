@@ -5,7 +5,6 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from notification.utils import create_notification
 from .serializers import CombinedDiscussionTicketSerializer, TicketSerializer, DiscussionSerializer
 from .models import Discussion
 from .pagination import DiscussionPagination
@@ -32,7 +31,6 @@ class DiscussionTicketViewSet(viewsets.ViewSet, DiscussionPagination):
             combined_serializer.validated_data["user"] = request.user
             data = combined_serializer.save()
             discussion = data["discussion"]
-            create_notification(user=request.user, action="یک گفتگو باز شد", content_object=discussion)
             return Response(data={"status": "Discussion Opened", "data": combined_serializer.data},
                             status=status.HTTP_201_CREATED)
         else:
@@ -66,7 +64,6 @@ class DiscussionTicketViewSet(viewsets.ViewSet, DiscussionPagination):
             return Response(data={"detail": "Discussion not found"}, status=status.HTTP_404_NOT_FOUND)
         discussion.rate = request.data.get("rate")
         discussion.save()
-        create_notification(user=request.user, action="گفتگو امتیاز دهی شد", content_object=discussion)
         return Response(data={"detail": "The discussion rated"}, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['post'])
@@ -77,7 +74,6 @@ class DiscussionTicketViewSet(viewsets.ViewSet, DiscussionPagination):
             return Response(data={"detail": "Discussion not found"}, status=status.HTTP_404_NOT_FOUND)
         discussion.is_terminated = True
         discussion.save()
-        create_notification(user=request.user, action="گفتگو بسته شد", content_object=discussion)
         return Response(data={"detail": "The discussion closed"}, status=status.HTTP_200_OK)
 
 
@@ -92,7 +88,6 @@ class CreateTicket(APIView):
             ticket_serializer.validated_data["discussion"] = discussion
             ticket_serializer.validated_data["user"] = request.user
             ticket_serializer.save()
-            create_notification(user=request.user, action=" پیام در گفتگو ارسال شد", content_object=discussion)
             discussion.set_is_answered_vlaue(request.user)
             return Response(data={"ticket": ticket_serializer.data}, status=status.HTTP_201_CREATED)
         else:

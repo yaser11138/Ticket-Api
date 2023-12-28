@@ -37,7 +37,8 @@ class Migration(migrations.Migration):
                             ("3", "Moderately Important"),
                             ("4", "Important"),
                             ("5", "Very Important"),
-                        ]
+                        ],
+                        max_length=1,  # Add max_length parameter
                     ),
                 ),
                 (
@@ -50,7 +51,7 @@ class Migration(migrations.Migration):
                             ("4", "Very Good"),
                             ("5", "Perfect"),
                         ],
-                        max_length=1,
+                        max_length=1,  # Add max_length parameter
                     ),
                 ),
                 (

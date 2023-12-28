@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from .views import DiscussionTicketViewSet, CreateTicket
 
 urlpatterns = [
-    path("ticket/create/<int:discussion_id>/", CreateTicket.as_view(), name="create-ticket"),
+    path("ticket/<int:discussion_id>/", CreateTicket.as_view(), name="create-ticket"),
 ]
 
 router = DefaultRouter()

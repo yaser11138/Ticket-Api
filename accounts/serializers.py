@@ -10,11 +10,11 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(required=True, validators=[EmailValidator])
 
     password = serializers.CharField(max_length=20, write_only=True, required=True)
-    password_conformation = serializers.CharField(max_length=20, write_only=True, required=True)
+    password_confirmation = serializers.CharField(max_length=20, write_only=True, required=True)
 
     class Meta:
         model = User
-        fields = ("username", "first_name", "last_name", "password", "password_conformation", "email")
+        fields = ("username", "first_name", "last_name", "password", "password_confirmation", "email")
         extra_kwargs = {
             "first_name": {"required": True},
             "last_name": {"required": True}
@@ -22,9 +22,9 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         password = data["password"]
-        password_conformation = data["password_conformation"]
-        if password != password_conformation:
-            raise serializers.ValidationError("password and password_conformation aren't same")
+        password_confirmation = data["password_confirmation"]
+        if password != password_confirmation:
+            raise serializers.ValidationError("password and password_confirmation aren't same")
         return data
 
     def create(self, validated_data):

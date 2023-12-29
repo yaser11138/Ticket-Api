@@ -28,7 +28,7 @@ env.read_env(BASE_DIR / ".env")
 SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = True if env('py_env') == 'development' else False
 
 ALLOWED_HOSTS = ["gglink.ir", "www.gglink.ir"]
 

@@ -5,12 +5,34 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter, OpenApiExample
+from drf_spectacular.types import OpenApiTypes
 from .serializers import CombinedDiscussionTicketSerializer, TicketSerializer, DiscussionSerializer
 from .models import Discussion
 from .pagination import DiscussionPagination
 from .permissions import IsnotStaff, IsOwnerOrStuff
 
 
+@extend_schema_view(
+    list=extend_schema(description="if user is a staff member it gives all of discussions"
+                                   "and if is not i just give use discussion"),
+    create=extend_schema(description="Create a new discussion"),
+    retrieve=extend_schema(
+        description="Retrieve details of a discussion by ID",
+        parameters=[OpenApiParameter('id', int, OpenApiParameter.PATH)]
+    ),
+    rate=extend_schema(
+        description="Rate a discussion",
+        parameters=[OpenApiParameter('id', int, OpenApiParameter.PATH)],
+        request=CombinedDiscussionTicketSerializer,
+        responses={status.HTTP_200_OK: {"detail": "The discussion rated"}}
+    ),
+    close=extend_schema(
+        description="Close a discussion",
+        parameters=[OpenApiParameter('id', int, OpenApiParameter.PATH)],
+        responses={status.HTTP_200_OK: {"detail": "The discussion closed"}}
+    ),
+)
 class DiscussionTicketViewSet(viewsets.ViewSet, DiscussionPagination):
     def get_permissions(self):
         if self.action == 'create' or self.action == 'rate':
@@ -81,6 +103,11 @@ class CreateTicket(APIView):
     serializer_class = TicketSerializer
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        request=TicketSerializer,
+        description="Create a new ticket for for the discussion by ID",
+        parameters=[OpenApiParameter('discussion_id', int, OpenApiParameter.PATH)],
+    )
     def post(self, request, discussion_id):
         discussion = Discussion.objects.get(id=discussion_id)
         ticket_serializer = TicketSerializer(data=request.data)

@@ -1,0 +1,459 @@
+openapi: 3.0.3
+info:
+  title: Ticket Project API
+  version: 1.0.0
+  description: Ticket Project API Documentation
+paths:
+  /accounts/register/:
+    post:
+      operationId: accounts_register_create
+      tags:
+      - accounts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRegister'
+          description: ''
+  /accounts/token/:
+    post:
+      operationId: accounts_token_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - accounts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenObtainPair'
+          description: ''
+  /accounts/token/refresh/:
+    post:
+      operationId: accounts_token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - accounts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /support/discussion/:
+    get:
+      operationId: support_discussion_list
+      description: if user is a staff member it gives all of discussionsand if is
+        not i just give use discussion
+      tags:
+      - support
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CombinedDiscussionTicket'
+          description: ''
+    post:
+      operationId: support_discussion_create
+      description: Create a new discussion
+      tags:
+      - support
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CombinedDiscussionTicket'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CombinedDiscussionTicket'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CombinedDiscussionTicket'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CombinedDiscussionTicket'
+          description: ''
+  /support/discussion/{id}/:
+    get:
+      operationId: support_discussion_retrieve
+      description: Retrieve details of a discussion by ID
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - support
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CombinedDiscussionTicket'
+          description: ''
+  /support/discussion/{id}/close/:
+    post:
+      operationId: support_discussion_close_create
+      description: Close a discussion
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - support
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CombinedDiscussionTicket'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CombinedDiscussionTicket'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CombinedDiscussionTicket'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                detail: The discussion closed
+          description: ''
+  /support/discussion/{id}/rate/:
+    post:
+      operationId: support_discussion_rate_create
+      description: Rate a discussion
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - support
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CombinedDiscussionTicket'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CombinedDiscussionTicket'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CombinedDiscussionTicket'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                detail: The discussion rated
+          description: ''
+  /support/ticket/{discussion_id}/:
+    post:
+      operationId: support_ticket_create
+      description: Create a new ticket for for the discussion by ID
+      parameters:
+      - in: path
+        name: discussion_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - support
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Ticket'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Ticket'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Ticket'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+          description: ''
+components:
+  schemas:
+    CombinedDiscussionTicket:
+      type: object
+      properties:
+        discussion:
+          $ref: '#/components/schemas/Discussion'
+        ticket:
+          $ref: '#/components/schemas/Ticket'
+      required:
+      - discussion
+      - ticket
+    DegreeOfImportanceEnum:
+      enum:
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      type: string
+      description: |-
+        * `1` - Not Important
+        * `2` - Slightly Important
+        * `3` - Moderately Important
+        * `4` - Important
+        * `5` - Very Important
+    Discussion:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        tickets:
+          type: string
+          readOnly: true
+        topic:
+          type: string
+          maxLength: 100
+        start_time:
+          type: string
+          format: date-time
+          readOnly: true
+        degree_of_importance:
+          $ref: '#/components/schemas/DegreeOfImportanceEnum'
+        rate:
+          allOf:
+          - $ref: '#/components/schemas/RateEnum'
+          readOnly: true
+        is_answered:
+          type: boolean
+          readOnly: true
+        is_terminated:
+          type: boolean
+          readOnly: true
+        created_by:
+          type: integer
+          readOnly: true
+      required:
+      - created_by
+      - degree_of_importance
+      - id
+      - is_answered
+      - is_terminated
+      - rate
+      - start_time
+      - tickets
+      - topic
+    RateEnum:
+      enum:
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      type: string
+      description: |-
+        * `1` - Poor
+        * `2` - Fair
+        * `3` - Good
+        * `4` - Very Good
+        * `5` - Perfect
+    Ticket:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          allOf:
+          - $ref: '#/components/schemas/User'
+          readOnly: true
+        sent_date:
+          type: string
+          format: date-time
+          readOnly: true
+        text:
+          type: string
+        discussion:
+          type: integer
+          readOnly: true
+      required:
+      - discussion
+      - id
+      - sent_date
+      - text
+      - user
+    TokenObtainPair:
+      type: object
+      properties:
+        username:
+          type: string
+          writeOnly: true
+        password:
+          type: string
+          writeOnly: true
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          readOnly: true
+      required:
+      - access
+      - password
+      - refresh
+      - username
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          writeOnly: true
+      required:
+      - access
+      - refresh
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        is_staff:
+          type: boolean
+          title: Staff status
+          description: Designates whether the user can log into this admin site.
+      required:
+      - username
+    UserRegister:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 20
+        password_confirmation:
+          type: string
+          writeOnly: true
+          maxLength: 20
+        email:
+          type: string
+          format: email
+      required:
+      - email
+      - first_name
+      - last_name
+      - password
+      - password_confirmation
+      - username
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

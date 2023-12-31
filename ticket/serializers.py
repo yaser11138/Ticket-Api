@@ -16,7 +16,7 @@ class TicketSerializer(serializers.ModelSerializer):
 
 class DiscussionSerializer(serializers.ModelSerializer):
 
-    tickets = serializers.SerializerMethodField()
+    tickets = TicketSerializer(many=True, read_only=True)
 
     class Meta:
         model = Discussion
@@ -28,10 +28,12 @@ class DiscussionSerializer(serializers.ModelSerializer):
             "is_answered": {"read_only": True}
         }
 
-    def get_tickets(self, obj):
-        tickets = obj.tickets
-        tickets_serializer = TicketSerializer(instance=tickets, many=True)
-        return tickets_serializer.data
+
+class DiscussionListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Discussion
+        fields = ("id", "topic", "degree_of_importance", "is_terminated", "is_answered")
 
 
 class CombinedDiscussionTicketSerializer(serializers.Serializer):
@@ -44,7 +46,6 @@ class CombinedDiscussionTicketSerializer(serializers.Serializer):
         ticket_data = validated_data['ticket']
         user = validated_data["user"]
         discussion_instance = Discussion.objects.create(created_by=user, **discussion_data)
+        ticket_instacnce = Ticket.objects.create(user=user, discussion=discussion_instance, **ticket_data)
 
-        ticket_instance = Ticket.objects.create(user=user, discussion=discussion_instance, **ticket_data)
-
-        return {'discussion': discussion_instance}
+        return {'discussion': discussion_instance, "ticket": ticket_instacnce}

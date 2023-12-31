@@ -7,7 +7,8 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter, OpenApiExample
 from drf_spectacular.types import OpenApiTypes
-from .serializers import CombinedDiscussionTicketSerializer, TicketSerializer, DiscussionSerializer
+from .serializers import CombinedDiscussionTicketSerializer, TicketSerializer, DiscussionSerializer,\
+    DiscussionListSerializer
 from .models import Discussion
 from .pagination import DiscussionPagination
 from .permissions import IsnotStaff, IsOwnerOrStuff
@@ -46,17 +47,21 @@ class DiscussionTicketViewSet(viewsets.ViewSet, DiscussionPagination):
 
     serializer_class = CombinedDiscussionTicketSerializer
 
+    def perform_create(self, serializer):
+        serializer.save()
+
     @transaction.atomic()
-    def create(self, request):
-        combined_serializer = CombinedDiscussionTicketSerializer(data=request.data)
-        if combined_serializer.is_valid():
-            combined_serializer.validated_data["user"] = request.user
-            data = combined_serializer.save()
-            discussion = data["discussion"]
-            return Response(data={"status": "Discussion Opened", "data": combined_serializer.data},
-                            status=status.HTTP_201_CREATED)
-        else:
-            return Response(data=combined_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def create(self, request, *args, **kwargs):
+        combined_serializer = self.get_serializer(data=request.data)
+        combined_serializer.is_valid(raise_exception=True)
+
+        user = request.user
+        combined_serializer.validated_data['user'] = user
+
+        self.perform_create(combined_serializer)
+
+        data = combined_serializer.data['discussion']
+        return Response(data={"status": "Discussion Opened", "data": data}, status=status.HTTP_201_CREATED)
 
     def list(self, request):
         if request.user.is_staff:
@@ -64,7 +69,7 @@ class DiscussionTicketViewSet(viewsets.ViewSet, DiscussionPagination):
         else:
             queryset = Discussion.objects.filter(created_by=request.user)
         data = self.paginate_queryset(queryset, request)
-        serializer = DiscussionSerializer(instance=data, many=True)
+        serializer = DiscussionListSerializer(instance=data, many=True)
         return self.get_paginated_response(serializer.data)
 
     def retrieve(self, request, pk=None):

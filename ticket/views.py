@@ -5,12 +5,12 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.pagination import PageNumberPagination
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter, OpenApiExample
 from drf_spectacular.types import OpenApiTypes
 from .serializers import CombinedDiscussionTicketSerializer, TicketSerializer, DiscussionSerializer,\
     DiscussionListSerializer
 from .models import Discussion
-from .pagination import DiscussionPagination
 from .permissions import IsnotStaff, IsOwnerOrStuff
 
 
@@ -34,7 +34,7 @@ from .permissions import IsnotStaff, IsOwnerOrStuff
         responses={status.HTTP_200_OK: {"detail": "The discussion closed"}}
     ),
 )
-class DiscussionTicketViewSet(viewsets.ViewSet, DiscussionPagination):
+class DiscussionTicketViewSet(viewsets.ViewSet, PageNumberPagination):
     def get_permissions(self):
         if self.action == 'create' or self.action == 'rate':
             permission_classes = [IsAuthenticated, IsnotStaff]

@@ -1,6 +1,4 @@
 # Support API for Website
-<br>
-# Introduction
 Welcome to the Support API for our website!. Users can submit their questions or problems, engage in open discussions, and receive responses from staff members or admins. Additionally, discussions can be closed once the issue is resolved.
 
 # Features

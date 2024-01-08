@@ -42,6 +42,9 @@ class Discussion(models.Model):
             self.is_answered = False
         self.save()
 
+    def __str__(self):
+        return f"{self.topic} Discussion created by {self.created_by}"
+
 
 class Ticket(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tickets", null=False)
@@ -51,3 +54,6 @@ class Ticket(models.Model):
 
     class Meta:
         ordering = ("-sent_date",)
+
+    def __str__(self):
+        return f"{self.discussion} ticket created by {self.user}"

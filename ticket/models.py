@@ -21,11 +21,21 @@ class Discussion(models.Model):
         ("4", "Important"),
         ("5", "Very Important"),
     ]
+
+    DepartmentCohices = [
+        ("S", "Support Department",),
+        ("T", "Tech Departemnt",),
+        ("F", "Fiance Department"),
+        ("H", "Human Resource Department"),
+        ("C", "Central Department"),
+    ]
+
     topic = models.CharField(max_length=100, null=False, blank=False)
     start_time = models.DateTimeField(auto_now_add=True)
     degree_of_importance = models.CharField(max_length=1,choices=ImportanceRate, null=False)
     rate = models.CharField(max_length=1, choices=CohicesRate)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="discussion_opened")
+    department = models.CharField(max_length=1, choices=DepartmentCohices, null=False, default="S")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="discussion_opened")
     is_answered = models.BooleanField(default=False)
     is_terminated = models.BooleanField(default=False)
 

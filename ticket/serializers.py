@@ -22,7 +22,7 @@ class DiscussionSerializer(serializers.ModelSerializer):
         model = Discussion
         fields = "__all__"
         extra_kwargs = {
-            "created_by": {"read_only": True},
+            "user": {"read_only": True},
             "rate": {"read_only": True},
             "is_terminated": {"read_only": True},
             "is_answered": {"read_only": True}
@@ -33,7 +33,7 @@ class DiscussionListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Discussion
-        fields = ("id", "topic", "degree_of_importance", "is_terminated", "is_answered")
+        fields = ("id", "topic", "degree_of_importance", "is_terminated", "is_answered", "department")
 
 
 class CombinedDiscussionTicketSerializer(serializers.Serializer):
@@ -45,7 +45,7 @@ class CombinedDiscussionTicketSerializer(serializers.Serializer):
         discussion_data = validated_data['discussion']
         ticket_data = validated_data['ticket']
         user = validated_data["user"]
-        discussion_instance = Discussion.objects.create(created_by=user, **discussion_data)
+        discussion_instance = Discussion.objects.create(user=user, **discussion_data)
         ticket_instacnce = Ticket.objects.create(user=user, discussion=discussion_instance, **ticket_data)
 
         return {'discussion': discussion_instance, "ticket": ticket_instacnce}

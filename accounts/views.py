@@ -6,7 +6,13 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.pagination import PageNumberPagination
-from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiParameter
+from drf_spectacular.utils import (
+    extend_schema_view,
+    extend_schema,
+    OpenApiParameter,
+    OpenApiResponse,
+    OpenApiExample,
+)
 from drf_spectacular.types import OpenApiTypes
 from .serializers import UserRegisterSerializer, UserSerializer
 
@@ -21,11 +27,52 @@ class RegisterView(APIView):
         user_serializer = UserRegisterSerializer(data=user_data)
         if user_serializer.is_valid():
             user_serializer.save()
-            return Response(data="User Registered Successfully", status=status.HTTP_201_CREATED)
+            return Response(
+                data="User Registered Successfully", status=status.HTTP_201_CREATED
+            )
         else:
-            return Response(data=user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                data=user_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
 
 
+@extend_schema_view(
+    get=extend_schema(
+        summary="Get the current user",
+        responses={200: UserSerializer},
+        tags=["User"],
+    ),
+    retrieve=extend_schema(
+        summary="Retrieve a user by ID",
+        responses={
+            200: UserSerializer,
+            404: OpenApiResponse(
+                OpenApiTypes.OBJECT,
+                "bad request",
+                [
+                    OpenApiExample(
+                        name="User not found",
+                        value={"error": "user not found"},
+                    )
+                ],
+            ),
+        },
+        tags=["User"],
+    ),
+    list=extend_schema(
+        summary="List all users",
+        parameters=[
+            OpenApiParameter(
+                name="page",
+                type=OpenApiTypes.INT,
+                location=OpenApiParameter.QUERY,
+                description="Page number for pagination",
+            ),
+        ],
+        responses={200: [UserSerializer]},
+        tags=["User"],
+    ),
+)
 class UserViewSet(viewsets.ViewSet, PageNumberPagination):
     def get_permissions(self):
         if self.action == "get":
@@ -51,7 +98,9 @@ class UserViewSet(viewsets.ViewSet, PageNumberPagination):
     def retrieve(self, request, pk):
         user = User.objects.get(pk=pk)
         if user is None:
-            return Response(data={"error": "user not found"},status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                data={"error": "user not found"}, status=status.HTTP_404_NOT_FOUND
+            )
         else:
             user_serializer = self.serializer_class(instance=user)
             user_data = user_serializer.data
@@ -63,7 +112,3 @@ class UserViewSet(viewsets.ViewSet, PageNumberPagination):
         user_serializer = self.serializer_class(instance=user_of_this_page, many=True)
         user_data = user_serializer.data
         return self.get_paginated_response(user_data)
-
-
-
-

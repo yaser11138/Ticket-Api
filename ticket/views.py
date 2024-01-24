@@ -32,16 +32,21 @@ from .permissions import IsnotStaff, IsOwnerOrStuff
         description="if user is a staff member it gives all of discussions"
         "and if is not i just give use discussion",
         summary="list of users",
+        request=None,
+        responses=DiscussionListSerializer(many=True)
     ),
     create=extend_schema(
         description="You can Crate a New Discussion with the first ticket of the discussion be aware that only non "
                     "staff user can create discussion",
         summary="Create a new discussion",
+        responses=DiscussionSerializer
     ),
     retrieve=extend_schema(
         description="You can Retrieve details of a discussion by ID and get all of it information",
         parameters=[OpenApiParameter("id", int, OpenApiParameter.PATH)],
         summary="Retrieve a discussion",
+        request=None,
+        responses=DiscussionSerializer,
     ),
     rate=extend_schema(
         description="you can rate the discussion specified by id by sending rate number",
@@ -160,7 +165,9 @@ class DiscussionTicketViewSet(viewsets.ViewSet, PageNumberPagination):
         if request.user.is_staff:
             queryset = Discussion.objects.all()
         else:
-            queryset = Discussion.objects.filter(created_by=request.user)
+            queryset = Discussion.objects.filter(user=request.user)
+        if queryset is None:
+            return Response(data={"message": "you don't have any discussion"}, status=status.HTTP_200_OK)
         data = self.paginate_queryset(queryset, request)
         serializer = DiscussionListSerializer(instance=data, many=True)
         return self.get_paginated_response(serializer.data)

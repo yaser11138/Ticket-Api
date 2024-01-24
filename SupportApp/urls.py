@@ -19,7 +19,6 @@ from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 urlpatterns = [
-    path("ssacc/", include("django.contrib.auth.urls")),
     path("admin/", admin.site.urls),
     path("accounts/", include("accounts.urls")),
     path("support/", include("ticket.urls")),

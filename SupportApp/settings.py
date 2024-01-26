@@ -30,7 +30,7 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True if env('py_env') == 'development' else False
 
-ALLOWED_HOSTS = ["gglink.ir", "www.gglink.ir", "127.0.0.1"]
+ALLOWED_HOSTS = ["gglink.ir", "www.gglink.ir", "127.0.0.1", "*", "sep.gglink.ir"]
 
 
 # Application definition
@@ -93,7 +93,7 @@ WSGI_APPLICATION = "SupportApp.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.mysql",
+        "ENGINE": "django.db.backends.postgresql",
         "NAME": env("name"),
         "USER": env("user"),
         "PASSWORD": env("password"),

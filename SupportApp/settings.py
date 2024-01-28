@@ -67,7 +67,7 @@ MIDDLEWARE = [
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-CSRF_TRUSTED_ORIGINS = ["http://gglink.ir:8080/","https://gglink.ir:8080/"]
+CSRF_TRUSTED_ORIGINS = ["http://gglink.ir:8080","https://gglink.ir:8080"]
 
 ROOT_URLCONF = "SupportApp.urls"
 

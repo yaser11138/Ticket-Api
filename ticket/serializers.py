@@ -30,10 +30,11 @@ class DiscussionSerializer(serializers.ModelSerializer):
 
 
 class DiscussionListSerializer(serializers.ModelSerializer):
+    user_username = serializers.CharField(source='user.username', read_only=True)
 
     class Meta:
         model = Discussion
-        fields = ("id", "topic", "degree_of_importance", "is_terminated", "is_answered", "department")
+        fields = ("id", "start_time", "user_username", "topic", "degree_of_importance", "is_terminated", "is_answered", "department")
 
 
 class CombinedDiscussionTicketSerializer(serializers.Serializer):

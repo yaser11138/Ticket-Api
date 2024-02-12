@@ -12,11 +12,13 @@ class TicketSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             "discussion": {"read_only": True},
         }
+#        ordering = ('sent_date', "id",)
 
 
 class DiscussionSerializer(serializers.ModelSerializer):
-
-    tickets = TicketSerializer(many=True, read_only=True)
+    
+    #tickets = TicketSerializer(many=True, read_only=True)
+    tickets = serializers.SerializerMethodField()
 
     class Meta:
         model = Discussion
@@ -28,6 +30,10 @@ class DiscussionSerializer(serializers.ModelSerializer):
             "is_answered": {"read_only": True}
         }
 
+    def get_tickets(self, instance):
+        tickets = instance.tickets.all().order_by("sent_date")
+        tickets_data = TicketSerializer(tickets, many=True).data
+        return tickets_data  
 
 class DiscussionListSerializer(serializers.ModelSerializer):
     user_username = serializers.CharField(source='user.username', read_only=True)
